@@ -3,10 +3,10 @@ package com.mattLearn.service;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by nowcoder on 2016/7/10.
+ * modified by Matt on Jan 12th 2021
  */
 @Service
-public class WendaService {
+public class TestService {
     public String getMessage(int userId) {
         return "Hello Message:" + String.valueOf(userId);
     }

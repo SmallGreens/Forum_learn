@@ -15,9 +15,7 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private UserDAO userDAO;
-
     public User getUser(int id) {
         return userDAO.selectById(id);
     }
-
 }

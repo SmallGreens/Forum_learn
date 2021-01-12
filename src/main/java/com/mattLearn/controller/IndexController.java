@@ -1,7 +1,8 @@
 package com.mattLearn.controller;
 
 import com.mattLearn.model.User;
-import com.mattLearn.service.WendaService;
+import com.mattLearn.service.TestService;
+import org.aspectj.weaver.ast.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,13 @@ public class IndexController {
     private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
     @Autowired
-    WendaService wendaService;
+    TestService testService;
 
     @RequestMapping(path = {"/", "/index"}, method = {RequestMethod.GET})
     @ResponseBody
     public String index(HttpSession httpSession) {
         logger.info("VISIT HOME");
-        return wendaService.getMessage(2) + "Hello NowCoder" + httpSession.getAttribute("msg");
+        return testService.getMessage(2) + "Hello NowCoder" + httpSession.getAttribute("msg");
     }
 
     @RequestMapping(path = {"/profile/{groupId}/{userId}"})

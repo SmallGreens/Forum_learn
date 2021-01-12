@@ -1,6 +1,7 @@
 package com.mattLearn.controller;
 
-import com.mattLearn.service.WendaService;
+import com.mattLearn.service.TestService;
+import org.aspectj.weaver.ast.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +16,11 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class SettingController {
     @Autowired
-    WendaService wendaService;
+    TestService testService;
 
     @RequestMapping(path = {"/setting"}, method = {RequestMethod.GET})
     @ResponseBody
     public String setting(HttpSession httpSession) {
-        return "Setting OK. " + wendaService.getMessage(1);
+        return "Setting OK. " + testService.getMessage(1);
     }
 }

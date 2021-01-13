@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 /**
- * Created by nowcoder on 2016/7/2.
+ * Modified by Matt on Jan.13rd 2021
  */
 @Mapper
 public interface QuestionDAO {
@@ -18,6 +18,8 @@ public interface QuestionDAO {
             ") values (#{title},#{content},#{createdDate},#{userId},#{commentCount})"})
     int addQuestion(Question question);
 
+    // 使用 xml 配置文件进行 数据库查询语句与程序接口的映射。
+    // 对应的 QuestionDAO.xml 文件位于 resources 文件夹 -》com.mattLearn.dao 文件夹中。
     List<Question> selectLatestQuestions(@Param("userId") int userId, @Param("offset") int offset,
                                          @Param("limit") int limit);
 

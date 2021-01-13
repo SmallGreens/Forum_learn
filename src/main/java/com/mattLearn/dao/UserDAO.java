@@ -4,7 +4,7 @@ import com.mattLearn.model.User;
 import org.apache.ibatis.annotations.*;
 
 /**
- * Created by nowcoder on 2016/7/2.
+ * Modified by Matt on Jan-13th 2021
  */
 @Mapper
 public interface UserDAO {

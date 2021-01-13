@@ -1,7 +1,7 @@
 package com.mattLearn.model;
 
 /**
- * Created by nowcoder on 2016/6/26.
+ * Modified by Matt on Jan. 13th 2021
  */
 public class User {
     private int id;

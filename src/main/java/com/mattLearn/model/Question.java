@@ -3,7 +3,7 @@ package com.mattLearn.model;
 import java.util.Date;
 
 /**
- * Created by nowcoder on 2016/7/15.
+ * Modified by Matt on Jan.13rd 2021
  */
 public class Question {
     private int id;

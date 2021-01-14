@@ -8,14 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by nowcoder on 2016/7/2.
+ * Modified by Matt on Jan. 14th 2021
  */
 @Service
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private UserDAO userDAO;
+
     public User getUser(int id) {
         return userDAO.selectById(id);
+    }
+
+    // overload the get method, can also use name to get the user.
+    public User getUser(String name){
+        return userDAO.selectByName(name);
     }
 }

@@ -47,6 +47,7 @@ public class InitDatabaseTests {
         logger.info("user8's head url is: " + user1.getHeadUrl());
         user1 = userDAO.selectById(6);
         logger.info("user6's head url is: " + user1.getHeadUrl());
+
     for(int i = 0; i < 10; ++i){
         Question question = new Question();
         question.setCommentCount(i);
@@ -56,6 +57,7 @@ public class InitDatabaseTests {
         question.setUserId(i+1);
         question.setTitle(String.format("Title {%d}", i));
         question.setContent(String.format("hahahahhah content of %d", i));
+        questionDAO.addQuestion(question);
 
 
     }

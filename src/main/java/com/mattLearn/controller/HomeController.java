@@ -24,7 +24,7 @@ import java.util.*;
 /**
  * Modified by Matt on Jan-9th 2021
  */
-@Controller
+// @Controller
 public class HomeController {
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
@@ -67,7 +67,7 @@ public class HomeController {
         return String.format("Profile of user %d, with type = %d, and id = %s", userID, type,id);
     }
 
-
+    // for learning the using of template framework Velocity.
     @RequestMapping(path = "/vm", method = {RequestMethod.GET})
     public String template(Model model){
         model.addAttribute("value1", "hahahahahhahahahahahaha");

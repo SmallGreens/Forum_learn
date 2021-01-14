@@ -1,12 +1,17 @@
 package com.mattLearn.controller;
 
+import com.mattLearn.model.Question;
 import com.mattLearn.model.User;
+import com.mattLearn.model.ViewObject;
+import com.mattLearn.service.QuestionService;
 import com.mattLearn.service.TestService;
+import com.mattLearn.service.UserService;
 import org.aspectj.weaver.ast.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -19,97 +24,34 @@ import java.util.*;
 
 /**
  * modified by Matt @21/1/07
+ *
+ * Jan 14th, 写网站首页。
  */
-//@Controller
+
+@Controller
 public class IndexController {
     private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
     @Autowired
-    TestService testService;
+    QuestionService questionService;
+
+    @Autowired
+    UserService userService;
 
     @RequestMapping(path = {"/", "/index"}, method = {RequestMethod.GET})
-    @ResponseBody
-    public String index(HttpSession httpSession) {
-        logger.info("VISIT HOME");
-        return testService.getMessage(2) + "Hello NowCoder" + httpSession.getAttribute("msg");
-    }
-
-    @RequestMapping(path = {"/profile/{groupId}/{userId}"})
-    @ResponseBody
-    public String profile(@PathVariable("userId") int userId,
-                          @PathVariable("groupId") String groupId,
-                          @RequestParam(value = "type", defaultValue = "1") int type,
-                          @RequestParam(value = "key", required = false) String key) {
-        return String.format("Profile Page of %s / %d, t:%d k: %s", groupId, userId, type, key);
-    }
-
-    @RequestMapping(path = {"/vm"}, method = {RequestMethod.GET})
-    public String template(Model model) {
-        model.addAttribute("value1", "vvvvv1");
-        List<String> colors = Arrays.asList(new String[]{"RED", "GREEN", "BLUE"});
-        model.addAttribute("colors", colors);
-
-        Map<String, String> map = new HashMap<>();
-        for (int i = 0; i < 4; ++i) {
-            map.put(String.valueOf(i), String.valueOf(i * i));
+    public String index(Model model){
+        // 获取问题列表
+        List<Question> questionList = questionService.getLatestQuestions(0,0,10);
+        List<ViewObject> vos = new ArrayList<>();
+        // 将每个问题的相关信息放置到一个 viewObject 中
+        for(Question question: questionList){
+            ViewObject vo = new ViewObject();
+            vo.set("question", question);
+            vo.set("user", userService.getUser(question.getUserId()));
+            vos.add(vo);
         }
-        model.addAttribute("map", map);
-        model.addAttribute("user", new User("LEE"));
-        return "home";
-    }
-
-    @RequestMapping(path = {"/request"}, method = {RequestMethod.GET})
-    @ResponseBody
-    public String request(Model model, HttpServletResponse response,
-                           HttpServletRequest request,
-                           HttpSession httpSession,
-                          @CookieValue("JSESSIONID") String sessionId) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("COOKIEVALUE:" + sessionId);
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String name = headerNames.nextElement();
-            sb.append(name + ":" + request.getHeader(name) + "<br>");
-        }
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                sb.append("Cookie:" + cookie.getName() + " value:" + cookie.getValue());
-            }
-        }
-        sb.append(request.getMethod() + "<br>");
-        sb.append(request.getQueryString() + "<br>");
-        sb.append(request.getPathInfo() + "<br>");
-        sb.append(request.getRequestURI() + "<br>");
-
-        response.addHeader("nowcoderId", "hello");
-        response.addCookie(new Cookie("username", "nowcoder"));
-
-        return sb.toString();
-    }
-
-    @RequestMapping(path = {"/redirect/{code}"}, method = {RequestMethod.GET})
-    public RedirectView redirect(@PathVariable("code") int code,
-                                 HttpSession httpSession) {
-        httpSession.setAttribute("msg", "jump from redirect");
-        RedirectView red = new RedirectView("/", true);
-        if (code == 301) {
-            red.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-        }
-        return  red;
-    }
-
-    @RequestMapping(path = {"/admin"}, method = {RequestMethod.GET})
-    @ResponseBody
-    public String admin(@RequestParam("key") String key) {
-        if ("admin".equals(key)) {
-            return "hello admin";
-        }
-        throw  new IllegalArgumentException("参数不对");
-    }
-
-    @ExceptionHandler()
-    @ResponseBody
-    public String error(Exception e) {
-        return "error:" + e.getMessage();
+        // 通过 model 传递 viewObject 到前端
+        model.addAttribute("vos", vos);
+        return "index";
     }
 }

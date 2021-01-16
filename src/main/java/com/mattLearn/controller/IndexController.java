@@ -1,25 +1,16 @@
 package com.mattLearn.controller;
 
 import com.mattLearn.model.Question;
-import com.mattLearn.model.User;
 import com.mattLearn.model.ViewObject;
 import com.mattLearn.service.QuestionService;
-import com.mattLearn.service.TestService;
 import com.mattLearn.service.UserService;
-import org.aspectj.weaver.ast.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -51,6 +42,21 @@ public class IndexController {
             vos.add(vo);
         }
         // 通过 model 传递 viewObject 到前端
+        model.addAttribute("vos", vos);
+        return "index";
+    }
+
+    @RequestMapping(path = "/user/{userId}", method = {RequestMethod.GET})
+    public String personPage(Model model,
+                             @PathVariable(value = "userId") int userId){
+        List<Question> questionList = questionService.getLatestQuestions(userId, 0, 10);
+        List<ViewObject> vos = new ArrayList<>();
+        for(Question question: questionList){
+            ViewObject vo = new ViewObject();
+            vo.set("question", question);
+            vo.set("user", userService.getUser(question.getUserId()));
+            vos.add(vo);
+        }
         model.addAttribute("vos", vos);
         return "index";
     }

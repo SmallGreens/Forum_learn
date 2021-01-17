@@ -23,6 +23,10 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+## adding reason: https://stackoverflow.com/questions/47240546/should-the-mvnw-files-be-added-to-the-repository
+## since i use Intellij to handle the project. don't need this cmd file.
+mvnw
+mvnw.cmd
 
 ##############################
 ## Gradle

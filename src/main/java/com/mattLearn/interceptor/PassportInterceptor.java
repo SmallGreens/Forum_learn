@@ -39,11 +39,13 @@ public class PassportInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
         String ticket = null;
         Cookie[] cookies = httpServletRequest.getCookies();
-        for(Cookie cookie:cookies){
-            if(cookie.getName().equals("tic")){
-                ticket = cookie.getValue();
-                // 找到 tick 后 记得 break 提前结束
-                break;
+        if(cookies != null){
+            for(Cookie cookie:cookies){
+                if(cookie.getName().equals("tic")){
+                    ticket = cookie.getValue();
+                    // 找到 tick 后 记得 break 提前结束
+                    break;
+                }
             }
         }
         LoginTicket loginTicket;

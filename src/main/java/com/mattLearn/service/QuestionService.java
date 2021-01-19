@@ -15,6 +15,10 @@ import java.util.List;
 public class QuestionService {
     @Autowired
     QuestionDAO questionDAO;
+
+    @Autowired
+    SensitiveWordService sensitiveWordService;
+
     private int limit = 10;
     private int offset = 0;
 
@@ -32,14 +36,18 @@ public class QuestionService {
     public int addQuestion(Question question){
         // 敏感词过滤，过滤 html 标签，例如 <script>
         // 使用 spring 框架提供的htmlUtils 可以对 相关 html 标签进行转义
+
         question.setContent(HtmlUtils.htmlEscape(question.getContent()));
+        question.setContent(sensitiveWordService.filter(question.getContent()));
         question.setTitle(HtmlUtils.htmlEscape(question.getTitle()));
-
-
-
+        question.setTitle(sensitiveWordService.filter(question.getTitle()));
 
 
         // 如果能够顺利添加 question，返回 question 的 id，否则，返回 0
         return questionDAO.addQuestion(question) > 0 ? question.getId(): 0;
+    }
+
+    public Question getQuestionById(int id){
+        return questionDAO.SelectById(id);
     }
 }

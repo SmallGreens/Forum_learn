@@ -1,6 +1,7 @@
 package com.mattLearn.service;
 
 import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,8 +22,9 @@ import java.util.Map;
 public class SensitiveWordService implements InitializingBean {
     private static final Logger logger = LoggerFactory.getLogger(SensitiveWordService.class);
 
+    private static final String DEFAULT_REPLACEMENT = "***";
 
-    private TrieNode rootNode;
+    private TrieNode rootNode = new TrieNode();
 
     public void addWord(String word){
         TrieNode tempNode = rootNode;
@@ -48,9 +50,59 @@ public class SensitiveWordService implements InitializingBean {
         }
     }
 
+    public String filter(String text){
+        if(StringUtils.isBlank(text)){
+            return text;
+        }
+        String replacement = DEFAULT_REPLACEMENT;
+        StringBuilder res = new StringBuilder();
+
+        TrieNode tempNode = rootNode;
+        int begin = 0;  // 不回退的指针
+        int position = 0;   // 实时比较指针，匹配失败则回退
+
+        while(position < text.length()){
+            Character c = text.charAt(position);
+            // 是空格符号的话直接跳过
+            // 用于捕获类似 “色|情” 这类中间插入特殊字符的非法词汇
+            if(isSymbol(c)){
+                if(tempNode == rootNode){
+                    res.append(c);
+                    ++begin;
+                }
+                ++position;
+                continue;
+            }
+
+            tempNode = tempNode.getSubNode(c);
+            // 情况1： 当前位置字符无匹配
+            if(tempNode == null){
+                res.append(text.charAt(begin));
+                // 跳到下一个字符开始测试
+                position = begin + 1;
+                begin = position;
+                tempNode = rootNode;    // 回到根结点
+                // 情况2：找到相符的字符，并且是敏感词的结尾
+            } else if(tempNode.isKeywordEnd()){
+                // 发现敏感词
+                res.append(replacement);
+                position = position + 1;
+                begin = position;
+                tempNode = rootNode;
+                // 情况3: 找到相符的字符，但是不是敏感词的结尾
+            }else{
+                // 当前字符有匹配，但是还没有到敏感词的末尾
+                ++position;
+            }
+        }
+        res.append(text.substring(begin));
+        return res.toString();
+    }
+
+
     private boolean isSymbol(Character c){
         int intC = (int)c;
-        return !CharUtils.isAsciiAlphanumeric(c) && (intC < 0x2E80 || intC > 0x9FFF);
+        return !CharUtils.isAsciiAlphanumeric(c) && (intC < 0x2E80 || intC > 0x9FFF);   // 0x2e80-0x9fff 东亚文字
     }
 
 
@@ -58,7 +110,6 @@ public class SensitiveWordService implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         rootNode = new TrieNode();
-
         try {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("SensitiveWords.txt");
             InputStreamReader read = new InputStreamReader(is);
@@ -72,7 +123,6 @@ public class SensitiveWordService implements InitializingBean {
         } catch (Exception e) {
            logger.error("Read the file failed." + e.getMessage());
         }
-
     }
 
 
@@ -109,5 +159,7 @@ public class SensitiveWordService implements InitializingBean {
     public static void main(String[] args) {
         SensitiveWordService s = new SensitiveWordService();
         s.addWord("haha");
+        s.addWord("色情");
+        System.out.println(s.filter("你好色情呵呵haha123"));
     }
 }

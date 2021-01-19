@@ -2,16 +2,16 @@ package com.mattLearn.controller;
 
 import com.mattLearn.model.HostHolder;
 import com.mattLearn.model.Question;
+import com.mattLearn.model.User;
 import com.mattLearn.service.QuestionService;
+import com.mattLearn.service.UserService;
 import com.mattLearn.util.ForumUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
@@ -32,6 +32,9 @@ public class QuestionController {
 
     @Autowired
     HostHolder hostHolder;
+
+    @Autowired
+    UserService userService;
 
     @RequestMapping(path = "/question/add", method = {RequestMethod.POST})
     @ResponseBody       // json 形式返回
@@ -58,5 +61,15 @@ public class QuestionController {
         }
 
         return ForumUtil.getJSONString(1,"Error!");
+    }
+
+    @RequestMapping(path = "/question/{questionID}", method = {RequestMethod.GET})
+    public String questionDetail(Model model,
+                                 @PathVariable("questionID") int id){
+        Question question = questionService.getQuestionById(id);
+        User user = userService.getUser(question.getUserId());
+        model.addAttribute("question", question);
+        model.addAttribute("user", user);
+        return "detail";
     }
 }

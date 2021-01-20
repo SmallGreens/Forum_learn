@@ -17,6 +17,8 @@ import java.util.Map;
 /**
  * @author Matt
  * @date 2021/1/18 18:51
+ *
+ * 敏感词过滤功能，使用前缀树算法。 Trie Tree
  */
 @Service
 public class SensitiveWordService implements InitializingBean {

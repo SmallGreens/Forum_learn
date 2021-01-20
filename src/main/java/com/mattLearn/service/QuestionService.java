@@ -50,4 +50,8 @@ public class QuestionService {
     public Question getQuestionById(int id){
         return questionDAO.SelectById(id);
     }
+
+    public boolean updateCommentCount(int count, int questionId){
+        return questionDAO.updateCommentCount(count, questionId) > 0;
+    }
 }

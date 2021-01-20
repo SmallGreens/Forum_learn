@@ -22,7 +22,12 @@ public interface QuestionDAO {
     // 对应的 QuestionDAO.xml 文件位于 resources 文件夹 -》com.mattLearn.dao 文件夹中。
     List<Question> selectLatestQuestions(@Param("userId") int userId, @Param("offset") int offset,
                                          @Param("limit") int limit);
+
     @Select({"select ", SELECT_FIELDS, " from ", TABLE_NAME, " where id=#{id}"})
     Question SelectById(int id);
+
+    @Update(" update question set comment_count=#{commentCount} where id = #{id}")
+    int updateCommentCount(@Param("commentCount") int commentCount,
+                           @Param("id") int id);
 
 }

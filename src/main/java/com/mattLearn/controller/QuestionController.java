@@ -1,8 +1,7 @@
 package com.mattLearn.controller;
 
-import com.mattLearn.model.HostHolder;
-import com.mattLearn.model.Question;
-import com.mattLearn.model.User;
+import com.mattLearn.model.*;
+import com.mattLearn.service.CommentService;
 import com.mattLearn.service.QuestionService;
 import com.mattLearn.service.UserService;
 import com.mattLearn.util.ForumUtil;
@@ -13,7 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Matt
@@ -35,6 +36,9 @@ public class QuestionController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CommentService commentService;
 
     @RequestMapping(path = "/question/add", method = {RequestMethod.POST})
     @ResponseBody       // json 形式返回
@@ -65,11 +69,23 @@ public class QuestionController {
 
     @RequestMapping(path = "/question/{questionID}", method = {RequestMethod.GET})
     public String questionDetail(Model model,
-                                 @PathVariable("questionID") int id){
-        Question question = questionService.getQuestionById(id);
+                                 @PathVariable("questionID") int questionId){
+        Question question = questionService.getQuestionById(questionId);
         User user = userService.getUser(question.getUserId());
         model.addAttribute("question", question);
         model.addAttribute("user", user);
+
+        List<Comment> commentList = commentService.getCommentByEntity(questionId, EntityType.ENTITY_QUESTION);
+        List<ViewObject> comments = new ArrayList<>();
+        for(Comment comment :commentList){
+            ViewObject vo  = new ViewObject();
+            vo.set("comment", comment);
+            vo.set("user", userService.getUser(comment.getUserId()));
+            comments.add(vo);
+        }
+        // 每一个 vo 中包含一个 comment 以及 comment 相关的用户的数据
+        model.addAttribute("comments", comments);
+
         return "detail";
     }
 }

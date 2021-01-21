@@ -7,7 +7,8 @@
             #foreach($message in $messages)
             <li id="msg-item-4009580">
                 <a class="list-head">
-                    <img alt="头像" src="$!message.headUrl">
+                    <!-- 设置头像 height 和 width 为 100%，使得头像可以在框中完整的显示 -->
+                    <img alt="头像" src="$!{message.user.headUrl}" style="height: 100%; width: 100%">
                 </a>
                 <div class="tooltip fade right in">
                     <div class="tooltip-arrow"></div>

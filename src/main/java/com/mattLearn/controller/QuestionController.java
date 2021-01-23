@@ -2,6 +2,7 @@ package com.mattLearn.controller;
 
 import com.mattLearn.model.*;
 import com.mattLearn.service.CommentService;
+import com.mattLearn.service.LikeService;
 import com.mattLearn.service.QuestionService;
 import com.mattLearn.service.UserService;
 import com.mattLearn.util.ForumUtil;
@@ -39,6 +40,9 @@ public class QuestionController {
 
     @Autowired
     CommentService commentService;
+
+    @Autowired
+    LikeService likeService;
 
     @RequestMapping(path = "/question/add", method = {RequestMethod.POST})
     @ResponseBody       // json 形式返回
@@ -79,6 +83,18 @@ public class QuestionController {
         List<ViewObject> comments = new ArrayList<>();
         for(Comment comment :commentList){
             ViewObject vo  = new ViewObject();
+
+            // 判断当前用户对该问题的喜欢状态，从而决定前端的显示状态
+            if(hostHolder.getUser() == null){
+                vo.set("liked", 0);
+            }else{
+                int status = likeService.getLikeStatus(hostHolder.getUser().getId(), EntityType.ENTITY_COMMENT, comment.getId());
+                vo.set("liked", status);
+            }
+            // 当前问题的赞的数量
+            long count = likeService.getLikeCount(EntityType.ENTITY_COMMENT, comment.getId());
+            vo.set("likeCount", count);
+
             vo.set("comment", comment);
             vo.set("user", userService.getUser(comment.getUserId()));
             comments.add(vo);

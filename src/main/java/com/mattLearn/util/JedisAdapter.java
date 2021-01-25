@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Matt
  * @date 2021/1/23 14:33
@@ -85,6 +89,38 @@ public class JedisAdapter implements InitializingBean {
             }
         }
         return false;
+    }
+
+    // 封装 jedis 的接口函数
+    public long lpush(String key, String value){
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.lpush(key, value);
+        }catch (Exception e){
+            logger.error("Adding data to redis failed. " + e.getMessage());
+        }finally {
+            if(jedis != null){
+                jedis.close();  // 最后关闭资源，将资源返回给 连接池
+            }
+        }
+        return 0;
+    }
+
+    // 封装 jedis 的接口函数
+    public List<String> brpop(int timeOut, String key){
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.brpop(timeOut, key);
+        }catch (Exception e){
+            logger.error("Adding data to redis failed. " + e.getMessage());
+        }finally {
+            if(jedis != null){
+                jedis.close();  // 最后关闭资源，将资源返回给 连接池
+            }
+        }
+        return new ArrayList<>();
     }
 
 }

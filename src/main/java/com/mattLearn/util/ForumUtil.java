@@ -15,6 +15,7 @@ public class ForumUtil {
     private static final Logger logger = LoggerFactory.getLogger(ForumUtil.class);
 
     public static int ANONYMOUS_ID = 8;
+    public static int SYSTEM_USERID = 6;
 
     // MD5 加密算法
     public static String MD5(String key) {

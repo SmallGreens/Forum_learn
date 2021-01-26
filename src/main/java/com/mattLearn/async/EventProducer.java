@@ -22,6 +22,8 @@ public class EventProducer {
     public boolean fireEvent(EventModel eventModel){
         try{
             String json = JSONObject.toJSONString(eventModel);
+        //    if(eventModel.getExts("email")!= null) System.out.println(eventModel.getExts("email"));
+        //    System.out.println(json);
             String key = RedisKeyUtil.getBizEventQueueKey();
             jedisAdapter.lpush(key, json);
             return true;

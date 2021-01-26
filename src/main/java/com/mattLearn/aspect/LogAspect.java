@@ -12,9 +12,11 @@ import java.util.Date;
 
 /**
  * Modified by Matt on Jan.12th 2021
+ *
+ * this is show the AOP. but when programming. have these useless log will make debugging hard.
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class LogAspect {
     private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
 

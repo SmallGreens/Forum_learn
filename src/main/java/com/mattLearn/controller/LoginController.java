@@ -1,5 +1,8 @@
 package com.mattLearn.controller;
 
+import com.mattLearn.async.EventModel;
+import com.mattLearn.async.EventProducer;
+import com.mattLearn.async.EventType;
 import com.mattLearn.model.HostHolder;
 import com.mattLearn.model.Question;
 import com.mattLearn.model.ViewObject;
@@ -39,6 +42,9 @@ public class LoginController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    EventProducer eventProducer;
 
     // 用户注册时 需要使用 post 请求
     @RequestMapping(path = {"/reg"}, method = {RequestMethod.POST})
@@ -96,6 +102,11 @@ public class LoginController {
                 Cookie cookie = new Cookie("tic", map.get("ticket"));
                 cookie.setPath("/");
                 response.addCookie(cookie);
+
+                eventProducer.fireEvent(new EventModel(EventType.LOGIN).setExt("username",username)
+                        .setExt("email","receiver@gmail.com")
+                        .setActorId(userService.getUser(username).getId()));
+
                 if(StringUtils.isNotBlank(nextPage)){
                     return "redirect:" + nextPage;
                 }

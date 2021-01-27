@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.security.MessageDigest;
+import java.util.Map;
 
 /**
  * Modified by Matt on Jan.15th 2021
@@ -56,6 +57,15 @@ public class ForumUtil {
     public static String getJSONString(int code){
         JSONObject json = new JSONObject();
         json.put("code", code);
+        return json.toJSONString();
+    }
+
+    public static String getJSONString(int code, Map<String, Object> map) {
+        JSONObject json = new JSONObject();
+        json.put("code", code);
+        for (Map.Entry<String, Object> entry : map.entrySet()) {    // 遍历 map 中的内容添加到 json 中
+            json.put(entry.getKey(), entry.getValue());
+        }
         return json.toJSONString();
     }
 

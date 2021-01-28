@@ -1,7 +1,8 @@
 package com.mattLearn.controller;
 
-import com.mattLearn.model.Question;
-import com.mattLearn.model.ViewObject;
+import com.mattLearn.model.*;
+import com.mattLearn.service.CommentService;
+import com.mattLearn.service.FollowService;
 import com.mattLearn.service.QuestionService;
 import com.mattLearn.service.UserService;
 import org.slf4j.Logger;
@@ -29,6 +30,15 @@ public class IndexController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    CommentService commentService;
+
+    @Autowired
+    FollowService followService;
+
+    @Autowired
+    HostHolder hostHolder;
+
     @RequestMapping(path = {"/", "/index"}, method = {RequestMethod.GET})
     public String index(Model model){
         // 获取问题列表
@@ -38,6 +48,7 @@ public class IndexController {
         for(Question question: questionList){
             ViewObject vo = new ViewObject();
             vo.set("question", question);
+            vo.set("followCount", followService.getFollowerCount(EntityType.ENTITY_QUESTION, question.getId()));
             vo.set("user", userService.getUser(question.getUserId()));
             vos.add(vo);
         }
@@ -46,18 +57,21 @@ public class IndexController {
         return "index";
     }
 
-    @RequestMapping(path = "/user/{userId}", method = {RequestMethod.GET})
+    @RequestMapping(path = "/user/{userId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String personPage(Model model,
                              @PathVariable(value = "userId") int userId){
-        List<Question> questionList = questionService.getLatestQuestions(userId, 0, 10);
-        List<ViewObject> vos = new ArrayList<>();
-        for(Question question: questionList){
-            ViewObject vo = new ViewObject();
-            vo.set("question", question);
-            vo.set("user", userService.getUser(question.getUserId()));
-            vos.add(vo);
+        User user = userService.getUser(userId);
+        ViewObject vo = new ViewObject();
+        vo.set("user", user);
+        vo.set("commentCount", commentService.getUserCommentCount(userId));
+        vo.set("followerCount", followService.getFollowerCount(EntityType.ENTITY_USER, userId));
+        vo.set("followeeCount", followService.getFollowingCount(userId, EntityType.ENTITY_USER));
+        if (hostHolder.getUser() != null) {
+            vo.set("followed", followService.isFollower(hostHolder.getUser().getId(), EntityType.ENTITY_USER, userId));
+        } else {
+            vo.set("followed", false);
         }
-        model.addAttribute("vos", vos);
-        return "index";
+        model.addAttribute("profileUser", vo);
+        return "profile";
     }
 }

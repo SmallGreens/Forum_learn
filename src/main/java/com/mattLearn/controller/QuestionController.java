@@ -1,10 +1,7 @@
 package com.mattLearn.controller;
 
 import com.mattLearn.model.*;
-import com.mattLearn.service.CommentService;
-import com.mattLearn.service.LikeService;
-import com.mattLearn.service.QuestionService;
-import com.mattLearn.service.UserService;
+import com.mattLearn.service.*;
 import com.mattLearn.util.ForumUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +40,9 @@ public class QuestionController {
 
     @Autowired
     LikeService likeService;
+
+    @Autowired
+    FollowService followService;
 
     @RequestMapping(path = "/question/add", method = {RequestMethod.POST})
     @ResponseBody       // json 形式返回
@@ -102,6 +102,24 @@ public class QuestionController {
         // 每一个 vo 中包含一个 comment 以及 comment 相关的用户的数据
         model.addAttribute("comments", comments);
 
+        List<ViewObject> followUsers = new ArrayList<>();
+        List<Integer> users = followService.getFollowers(EntityType.ENTITY_QUESTION, questionId, 20);
+        for(Integer userId : users){
+            ViewObject vo = new ViewObject();
+            User u = userService.getUser(userId);
+            if(u == null) continue;
+            vo.set("headUrl", u.getHeadUrl());
+            vo.set("name", u.getName());
+            vo.set("id", u.getId());
+            followUsers.add(vo);
+        }
+        model.addAttribute("followUsers", followUsers);
+        if(hostHolder.getUser() != null){
+            model.addAttribute("followed", followService.isFollower(hostHolder.getUser().getId(),
+                    EntityType.ENTITY_QUESTION, questionId));
+        }else{
+            model.addAttribute("followed", false);
+        }
         return "detail";
     }
 }

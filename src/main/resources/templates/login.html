@@ -18,14 +18,11 @@
         <div class="index-header">
             <h1 class="logo hide-text"><img src="../images/res/nk.png" alt=""></h1>
             <h2 class="subtitle">
-                与世界分享你的知识、经验和见解
-                <br>
-                <br>
-                <div style="color: red; font-style: italic; font-size: 15px">
                 #if($msg)
                 $!{msg}
+                #else
+                与世界分享你的知识、经验和见解
                 #end
-                </div>
             </h2>
         </div>
         <div class="desk-front sign-flow clearfix sign-flow-simple">
@@ -40,7 +37,6 @@
                             <input type="password" name="password" aria-label="密码" placeholder="密码" required="">
                         </div>
                     </div>
-                    <!-- 用于登录跳转是的埋点， 从 login 界面获取相关的值，然后在登录的时候作为一个 hidden 的变量传递给后端，用于进行网页的回 跳功能 -->
                     <input type="hidden" name="next" value="$!{next}"/>
                     <div class="button-wrapper command clearfix">
                         <button class="sign-button submit" type="submit" onclick="form=document.getElementById('regloginform');form.action='/login/'">登录</button>

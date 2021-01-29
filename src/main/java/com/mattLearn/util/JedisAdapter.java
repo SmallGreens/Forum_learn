@@ -111,6 +111,22 @@ public class JedisAdapter implements InitializingBean {
     }
 
     // 封装 jedis 的接口函数
+    public List<String> lrange(String key, int start, int end){
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.lrange(key, start, end);
+        }catch (Exception e){
+            logger.error("Adding data to redis failed. " + e.getMessage());
+        }finally {
+            if(jedis != null){
+                jedis.close();  // 最后关闭资源，将资源返回给 连接池
+            }
+        }
+        return null;
+    }
+
+    // 封装 jedis 的接口函数
     public List<String> brpop(int timeOut, String key){
         Jedis jedis = null;
         try {

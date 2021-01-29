@@ -1,8 +1,12 @@
 package com.mattLearn.controller;
 
+import com.mattLearn.async.EventModel;
+import com.mattLearn.async.EventProducer;
+import com.mattLearn.async.EventType;
 import com.mattLearn.model.Comment;
 import com.mattLearn.model.EntityType;
 import com.mattLearn.model.HostHolder;
+import com.mattLearn.model.Question;
 import com.mattLearn.service.CommentService;
 import com.mattLearn.service.QuestionService;
 import com.mattLearn.util.ForumUtil;
@@ -34,6 +38,9 @@ public class CommentController {
     @Autowired
     QuestionService questionService;
 
+    @Autowired
+    EventProducer eventProducer;
+
     @RequestMapping(path = "/addComment", method = {RequestMethod.POST})
     public String addComment(@RequestParam("questionId") int questionId,
                              @RequestParam("content") String content){
@@ -55,6 +62,12 @@ public class CommentController {
             // for temp use.
             int count = commentService.getCommentCount(questionId,EntityType.ENTITY_QUESTION);
             questionService.updateCommentCount(count,questionId);
+
+            Question question = questionService.getQuestionById(questionId);
+            eventProducer.fireEvent(new EventModel(EventType.COMMENT)
+                    .setEntityType(EntityType.ENTITY_COMMENT)
+                    .setActorId(hostHolder.getUser().getId())
+                    .setEntityOwnerId(question.getUserId()).setEntityId(questionId));
 
         } catch (Exception e) {
             logger.error("Error while adding the comment." + e.getMessage());

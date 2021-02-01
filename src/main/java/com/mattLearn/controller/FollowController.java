@@ -94,6 +94,7 @@ public class FollowController {
 
         boolean res = followService.follow(hostHolder.getUser().getId(), EntityType.ENTITY_QUESTION, questionId);
 
+        // 用于 feed 流的产生。处理部分参看 FeedHandler.java
         eventProducer.fireEvent(new EventModel(EventType.FOLLOW)
                 .setEntityType(EntityType.ENTITY_QUESTION)
                 .setActorId(hostHolder.getUser().getId())

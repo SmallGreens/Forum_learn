@@ -26,5 +26,4 @@ public interface FeedDAO {
 
     @Select({"Select ", SELECT_FIELDS, " from ", TABLE_NAME, "where Id = #{id}"})
     Feed getFeedById(int id);
-
 }

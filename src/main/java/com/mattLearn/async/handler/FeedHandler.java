@@ -75,7 +75,7 @@ public class FeedHandler implements EventHandler {
         String data;
         if((data = buildFeedData(event)) == null) return;   // ref java 源码中的写法
         feed.setData(data);
-        feedService.addFeed(feed);
+        feedService.addFeed(feed);  // 添加事件到数据库中
 
         // 给事件的粉丝推 -- 这里简化地推给所有的粉丝
         List<Integer> followers = followService.getFollowers(EntityType.ENTITY_USER,
